@@ -19,24 +19,42 @@ DATA(lo_ppf_manager) = cl_manager_ppf=>get_instance( ).
 TRY.
     DATA(lo_agent) = ca_trigger_ppf=>agent.
 
-    lo_trigger ?=
-ca_trigger_ppf=>agent->if_os_ca_persistency~get_persistent_by_oid( 'E3ED1F813DAC1EDEA2F7ADC3A1462150' ).
+    lo_trigger ?= ca_trigger_ppf=>agent->if_os_ca_persistency~get_persistent_by_oid( 'E3ED1F813DAC1EDEA2F7ADC3A1462150' ).
+
+    lo_appl ?= lo_trigger->get_appl( ).
+    lo_appl->get_author( ).
 
 *    lo_agent->if_os_factory~refresh_persistent( lo_trigger ).
 
-    lo_trigger ?=
- ca_trigger_ppf=>agent->if_os_ca_persistency~get_persistent_by_oid( 'E3ED1F813DAC1EDEA2F7ADC3A1462150' ).
+*    lo_trigger ?=
+* ca_trigger_ppf=>agent->if_os_ca_persistency~get_persistent_by_oid( 'E3ED1F813DAC1EDEA2F7ADC3A1462150' ).
 
-    lo_trigger ?=
-ca_trigger_ppf=>agent->if_os_ca_persistency~get_persistent_by_oid( 'E3ED1F813DAC1EDEA2F9154013C3A23E' ).
+    lo_trigger ?= ca_trigger_ppf=>agent->if_os_ca_persistency~get_persistent_by_oid( 'E3ED1F813DAC1EDEA2F9154013C3A23E' ).
 
+    lo_appl ?= lo_trigger->get_appl( ).
+    lo_appl->get_author( ).
 
     IF 1 = 2.
 
       lo_agent->if_os_factory~refresh_persistent( lo_trigger ).
 
+
       lo_appl ?= lo_trigger->get_appl( ).
 *CATCH cx_os_object_not_found. " Object Services: Objekt nicht gefunden
+
+      TRY.
+          ca_book_ppf=>agent->if_os_factory~refresh_persistent( i_object = lo_appl ).
+        CATCH cx_os_object_not_refreshable. " Object Services: Objekt kann nicht nachgeladen werden
+
+      ENDTRY.
+
+
+*      lo_ppf_manager->refresh(
+*         EXPORTING
+*           clear_all  = 'X'           " Invalidieren aller Kontexte
+*           clear_appl =    VALUE #( ( lo_trigger ) )              " Anwendungsobjekte
+*      ).
+
 
       lo_appl->bi_persistent~refresh( ).
 
